@@ -1,1 +1,1 @@
-# cyanide_in_space
+# Cyanide in Space
