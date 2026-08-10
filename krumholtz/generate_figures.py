@@ -363,7 +363,9 @@ def make_figure2(mols, outfile="figure2.png"):
 
 # FIGURE 3 --> Save FIR vs L' data to a file for a given total volume, so it can be plotted separately
 
-def make_figure3(mols, outfile="FIR_Lprime_modeldata.npz", Vmol=1e8):
+# FIGURE 3 --> Save FIR vs L' data to a file for a given total volume, so it can be plotted separately
+
+def make_figure3(mols, outfile="FIR_Lprime_1e8_modeldata.npz", Vmol=1e8):
 
     n_grid = np.geomspace(10, 1e7, 20)
 
@@ -383,8 +385,9 @@ def make_figure3(mols, outfile="FIR_Lprime_modeldata.npz", Vmol=1e8):
             Lprime_vals = []
 
             for n_mean in n_grid:
+                print(f"Computing {sp} {case} n_mean={n_mean:.2e}")
 
-                beta= solve_escape_probabilities(
+                beta, R = solve_escape_probabilities(
                     level_calc,
                     n_ref=n_mean,
                     coll_partner_idx=part,
@@ -401,23 +404,19 @@ def make_figure3(mols, outfile="FIR_Lprime_modeldata.npz", Vmol=1e8):
                     X_abund=kwargs["X_abund"]
                 )
 
-                # SFR density [Msun yr^-1 pc^-3]
-                sfr_density = rho_dot_star(n_mean,kwargs["mach"])
 
+                # SFR/V, Msun yr^-1 pc^-3
+                sfr_V = rho_dot_star(n_mean,kwargs["mach"])
                 # Total SFR [Msun yr^-1]
-                sfr = sfr_density * Vmol
-
-                # Convert SFR to FIR luminosity [Lsun]
+                sfr = sfr_V * Vmol
                 LFIR = sfr * 5.8e9
 
-                # Line luminosity density
+                # L'/V
                 L_solar_density = res["L"] / LSUN
                 nu = LINE_FREQUENCIES[sp]
+                Lprime_density = L_solar_density/(3e-11 * nu**3)
+                Lprime_density *= PC_CM**3 # cm^-1 -> pc^-1
 
-                Lprime_density = (L_solar_density/ (3e-11 * nu**3))
-
-                # cm^-3 -> pc^-3
-                Lprime_density *= PC_CM**3
 
                 # Total line luminosity [K km s^-1 pc^2]
                 Lprime = Lprime_density * Vmol
@@ -430,6 +429,7 @@ def make_figure3(mols, outfile="FIR_Lprime_modeldata.npz", Vmol=1e8):
 
     np.savez_compressed(outfile, **results)
     print("Saved", outfile)
+
 
 
 
