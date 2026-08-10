@@ -1,13 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
-
-
-LINE_FREQUENCIES = {
-    "CO": 115.271,       # GHz
-    "HCO+": 89.1885,     # GHz
-    "HCN": 88.6318,      # GHz
-}
+import os.path
 
 
 from load_moldata import LevelCalculator
@@ -17,6 +11,13 @@ from cloud_model import (
 from config import (
     GALAXY_CASES, LINE_COLORS, LINE_LABELS, MOLDATA_FILES, COLL_PARTNER_IDX, get_cloud_kwargs,
 )
+
+
+LINE_FREQUENCIES = {
+    "CO": 115.271,       # GHz
+    "HCO+": 89.1885,     # GHz
+    "HCN": 88.6318,      # GHz
+}
 
 SPECIES = ["CO", "HCO+", "HCN"]
 MAX_LEVEL = 15  # enough levels for CO/HCO+/HCN 1-0 luminosities up to n~1e6-1e8 cm^-3
@@ -28,11 +29,14 @@ PAPER_NCRIT = {
 }
 
 
+
 def load_molecules():
     """Load each species' LAMDA file once and reuse across all figures."""
     return {sp: LevelCalculator(MOLDATA_FILES[sp], max_level=MAX_LEVEL) for sp in SPECIES}
 
 
+
+# FIGURE 1
 def make_figure1(mols, case="intermediate", n_means=(1e2, 1e3, 1e4), outfile="figure1.png"):
     fig, axes = plt.subplots(3, 1, figsize=(6, 11), sharex=True)
     lnx_grid = np.linspace(-8, 14, 300)
@@ -83,11 +87,7 @@ def make_figure1(mols, case="intermediate", n_means=(1e2, 1e3, 1e4), outfile="fi
 # FIGURE 2
 def make_figure2(mols, outfile="figure2.png"):
 
-    fig, axes = plt.subplots(
-        4, 1,
-        figsize=(6, 11),
-        sharex=True
-    )
+    fig, axes = plt.subplots(4, 1, figsize=(6, 11), sharex=True)
 
     n_grid = np.geomspace(10, 1e7, 20)
 
@@ -134,18 +134,11 @@ def make_figure2(mols, outfile="figure2.png"):
         for case in GALAXY_CASES:
 
             kwargs = get_cloud_kwargs(sp, case)
-
             vals = []
 
             for n_mean in n_grid:
 
-                beta, R = solve_escape_probabilities(
-                    level_calc,
-                    n_ref=n_mean,
-                    coll_partner_idx=part,
-                    **kwargs
-                )
-
+                beta, R = solve_escape_probabilities(level_calc, n_ref=n_mean, coll_partner_idx=part, **kwargs)
 
                 res = luminosity_per_volume(
                     level_calc,
@@ -158,26 +151,16 @@ def make_figure2(mols, outfile="figure2.png"):
                 )
 
 
-                # Msun yr^-1 pc^-3
+                # SFR/V, Msun yr^-1 pc^-3
                 sfr = rho_dot_star(n_mean,kwargs["mach"])
 
-
-                # Frequency
-                nu = LINE_FREQUENCIES[sp]
-                L_solar_density = res["L"] / LSUN
-
                 # L'/V
+                L_solar_density = res["L"] / LSUN
+                nu = LINE_FREQUENCIES[sp]
                 Lprime_density = L_solar_density/(3e-11 * nu**3)
+                Lprime_density *= PC_CM**3 # cm^-1 -> pc^-1
 
-
-                # cm^-1 -> pc^-1
-                Lprime_density *= PC_CM**3
-
-
-                vals.append(
-                    sfr / Lprime_density
-                )
-
+                vals.append(sfr / Lprime_density)
 
             ratios[(sp, case)] = np.array(vals)
 
@@ -222,7 +205,6 @@ def make_figure2(mols, outfile="figure2.png"):
         frameon=False,
         loc = 'lower right'
     )
-
 
     # Add FIR/L' secondary axis
     ax2 = ax.twinx()
@@ -370,23 +352,84 @@ def make_figure2(mols, outfile="figure2.png"):
     )
 
 
-    axes[-1].set_xlabel(
-        r"$\bar{n}$ (cm$^{-3}$)"
-    )
+    axes[-1].set_xlabel(r"$\bar{n}$ (cm$^{-3}$)")
 
+    fig.subplots_adjust(hspace=0)
 
-    fig.subplots_adjust(
-        hspace=0
-    )
-
-
-    fig.savefig(
-        outfile,
-        dpi=150,
-        bbox_inches="tight",
-    )
+    fig.savefig(outfile, dpi=150, bbox_inches="tight")
 
     print("wrote", outfile)
+
+
+# FIGURE 3 --> Save FIR vs L' data to a file for a given total volume, so it can be plotted separately
+
+def make_figure3(mols, outfile="FIR_Lprime_modeldata.npz", Vmol=1e8):
+
+    n_grid = np.geomspace(10, 1e7, 20)
+
+    LSUN = 3.828e33
+    PC_CM = 3.0856776e18
+
+    results = {}
+
+    for sp in SPECIES:
+        level_calc = mols[sp]
+        part = COLL_PARTNER_IDX[sp]
+
+        for case in GALAXY_CASES:
+            kwargs = get_cloud_kwargs(sp, case)
+
+            LFIR_vals = []
+            Lprime_vals = []
+
+            for n_mean in n_grid:
+
+                beta= solve_escape_probabilities(
+                    level_calc,
+                    n_ref=n_mean,
+                    coll_partner_idx=part,
+                    **kwargs
+                )
+
+                res = luminosity_per_volume(
+                    level_calc,
+                    beta,
+                    n_mean=n_mean,
+                    coll_partner_idx=part,
+                    T=kwargs["T"],
+                    mach=kwargs["mach"],
+                    X_abund=kwargs["X_abund"]
+                )
+
+                # SFR density [Msun yr^-1 pc^-3]
+                sfr_density = rho_dot_star(n_mean,kwargs["mach"])
+
+                # Total SFR [Msun yr^-1]
+                sfr = sfr_density * Vmol
+
+                # Convert SFR to FIR luminosity [Lsun]
+                LFIR = sfr * 5.8e9
+
+                # Line luminosity density
+                L_solar_density = res["L"] / LSUN
+                nu = LINE_FREQUENCIES[sp]
+
+                Lprime_density = (L_solar_density/ (3e-11 * nu**3))
+
+                # cm^-3 -> pc^-3
+                Lprime_density *= PC_CM**3
+
+                # Total line luminosity [K km s^-1 pc^2]
+                Lprime = Lprime_density * Vmol
+
+                LFIR_vals.append(LFIR)
+                Lprime_vals.append(Lprime)
+
+            results[f"{sp}_{case}_LFIR"] = np.array(LFIR_vals)
+            results[f"{sp}_{case}_Lprime"] = np.array(Lprime_vals)
+
+    np.savez_compressed(outfile, **results)
+    print("Saved", outfile)
 
 
 
@@ -394,4 +437,5 @@ def make_figure2(mols, outfile="figure2.png"):
 if __name__ == "__main__":
     mols = load_molecules()
     #make_figure1(mols)
-    make_figure2(mols)
+    #make_figure2(mols)
+    make_figure3(mols)

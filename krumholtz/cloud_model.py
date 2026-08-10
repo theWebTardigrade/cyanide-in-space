@@ -129,7 +129,6 @@ def get_collision_matrix(level_calc, T, coll_partner_idx):
 
 
 
-
 def level_populations(A_eff, coll_matrix, n_H2):
     """
     Solve the statistical-equilibrium linear system (eqs 5-6) for a single
@@ -150,9 +149,7 @@ def level_populations(A_eff, coll_matrix, n_H2):
 
 def transition_info(level_calc, up_idx, low_idx):
     """
-    Radiative data for the up_idx -> low_idx transition, read directly off
-    the LevelCalculator instance (built from your real LAMDA file):
-    (A_ul [s^-1], g_upper, g_lower, wavelength [cm]).
+    Radiative data for the up_idx -> low_idx transition.
     """
     A_ul = level_calc.A_coeffs[up_idx, low_idx]
     g_u = level_calc.weights[up_idx]
@@ -181,12 +178,12 @@ def solve_escape_probabilities(level_calc, T, mach, X_abund, tau_ref, n_ref,
     beta : (n_levels, n_levels) ndarray, beta[j, i] for every radiative
            transition j (upper) -> i (lower) with A_coeffs[j, i] > 0.
            Entries with no radiative transition are left at 1 (unused).
-    R : cloud radius, cm.
     """
+
     A_coeffs = level_calc.A_coeffs
     n_levels = A_coeffs.shape[0]
     g = level_calc.weights
-    energies = level_calc.energies  # cm^-1, astropy Quantity
+    energies = level_calc.energies 
     cs = sound_speed(T)
     coll_matrix = get_collision_matrix(level_calc, T, coll_partner_idx)
 
@@ -203,8 +200,8 @@ def solve_escape_probabilities(level_calc, T, mach, X_abund, tau_ref, n_ref,
         Aij, g_u, g_l, lam = transition_info(level_calc, up_idx, low_idx)
         fj, fi = f[up_idx], f[low_idx]  # fj = upper pop., fi = lower pop.
         geom = (g_u / g_l) * Aij * lam ** 3 / (4 * (2 * np.pi) ** 1.5 * mach * cs)
-        denom = geom * n_ref * X_abund * fi * (1 - fj * g_l / (fi * g_u)) if fi > 0 else 0.0
-        R = tau_ref / denom if denom > 0 else 1e18  # cm, fallback if ill-posed
+        denom = geom * n_ref * X_abund * fi * (1 - fj * g_l / (fi * g_u))
+        R = tau_ref / denom
 
         # update tau_ij, beta_ij for every radiative transition (eqs 7-8)
         new_beta = np.ones((n_levels, n_levels))
