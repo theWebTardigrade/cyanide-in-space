@@ -1,44 +1,8 @@
-"""
-cloud_model.py
----------------
-Implements the physical model of Krumholz & Thompson (2007, ApJ 669, 289):
-
-  * eq. (1)   lognormal density PDF for turbulent molecular clouds
-  * eq. (2)   volumetric star formation rate (Krumholz & McKee 2005 law)
-  * eqs (5-8) escape-probability statistical equilibrium for a homogeneous
-              spherical cloud, solved by fixed-point (Newton-Raphson-like)
-              iteration on the escape probabilities beta_ij
-  * eq. (9)   line luminosity per unit volume, integrated over the density PDF
-
-Unlike the earlier version of this file, this one does NOT synthesize its
-own molecular data. Instead it is a set of plain functions that take a
-`load_moldata.LevelCalculator` instance (built from your real LAMDA .dat
-files) as their data source, and that do their statistical-equilibrium
-linear algebra entirely through `coeffMatrix`, `ordinateVector`, and
-`findPopulations` in utils.py -- i.e. the exact same functions
-`LevelCalculator.find_populations` itself uses. The only new physics added
-here on top of your existing code is the escape-probability (radiative
-trapping) iteration and the density-PDF integral, neither of which are in
-utils.py / load_moldata.py.
-
-Typical usage
--------------
-    from load_moldata import LevelCalculator
-    from cloud_model import solve_escape_probabilities, luminosity_per_volume, rho_dot_star
-
-    co = LevelCalculator("co.dat", max_level=15)
-    beta, R = solve_escape_probabilities(
-        co, T=20.0, mach=50.0, X_abund=4e-4, tau_ref=20.0, n_ref=1e3,
-        up_idx=1, low_idx=0, coll_partner_idx=1,   # 1 = ortho-H2 for CO
-    )
-    result = luminosity_per_volume(co, beta, T=20.0, mach=50.0, X_abund=4e-4,
-                                    n_mean=1e3, coll_partner_idx=1)
-    sfr = rho_dot_star(n_H2=1e3, mach=50.0)
-"""
-
 import numpy as np
 from utils import coeffMatrix, ordinateVector, findPopulations, collisionCoeffsFromTable
 
+
+# Define constants
 
 MU_H2 = 3.9e-24        # g, mean mass per H2 molecule (sec. 2.1 of the paper)
 G_CGS = 6.67430e-8     # cm^3 g^-1 s^-2
@@ -47,11 +11,13 @@ H_CGS = 6.62607015e-27  # erg s
 C_CGS = 2.99792458e10   # cm / s
 KB_CGS = 1.380649e-16   # erg / K
 AMU_CGS = 1.66053906660e-24  # g
+MSUN = 1.98847e33       # g
+YR = 3.15576e7          # s
+PC = 3.0856776e18       # cm
 
 
 # ---------------------------------------------------------------------------
-# eqs. (1)-(2): cloud density PDF and star formation rate. These don't
-# depend on the molecular data at all.
+# eqs. (1)-(2): cloud density PDF and star formation rate.
 # ---------------------------------------------------------------------------
 
 def sigma2_of_mach(mach):
@@ -88,11 +54,6 @@ def rho_dot_star(n_H2, mach):
         32 * G_CGS * rho**3 / (3 * np.pi)
     )
     # g s^-1 cm^-3
-
-    MSUN = 1.98847e33       # g
-    YR = 3.15576e7          # s
-    PC = 3.0856776e18       # cm
-
     sfr_msun_yr_pc3 = (sfr_cgs * YR * PC**3 / MSUN )
 
     return sfr_msun_yr_pc3
@@ -111,8 +72,7 @@ def list_collision_partners(level_calc):
     """
     Print and return the [(index, name), ...] of collision partners in a
     LevelCalculator, so you can pick the right coll_partner_idx for a given
-    molecule (this is NOT always "1 = ortho-H2" -- e.g. in LAMDA's hcn.dat
-    partner 0 is H2 and partner 1 is electrons).
+    molecule.
     """
     partners = []
     for idx, table in enumerate(level_calc.coll_tables):
@@ -139,10 +99,7 @@ def get_collision_matrix(level_calc, T, coll_partner_idx):
     """
     Get the (n_levels x n_levels) collisional rate coefficient matrix at
     temperature T for one collision partner. Calls utils.collisionCoeffsFromTable
-    directly on just that partner's table (rather than going through
-    LevelCalculator.collisional_parameters, which builds matrices for every
-    partner table at once and would fail if a partner we don't care about
-    doesn't happen to tabulate this exact T). LAMDA files only tabulate
+    directly on just that partner's table. LAMDA files only tabulate
     rates at a fixed grid of temperatures, so if T isn't one of them we
     linearly interpolate the rate matrix between the two bracketing
     tabulated temperatures (clipping to the table edge if T is outside
