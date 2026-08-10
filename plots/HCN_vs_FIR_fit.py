@@ -47,7 +47,7 @@ def read_table_as_dict(filename):
 
 
 #### GAO & SOLOMON 2004
-Table = open('/home/polaris/cyanide_in_space/scripts/prussic-main/prussic_iii/literature_data/table_Gao2004.data')
+Table = open('/home/polaris/cyanide_in_space/scripts/prussic-main/prussic_iii/literature_data/table_Gao2004_corr.data')
 GS2004_LFIR, GS2004_LHCN = np.genfromtxt(Table, unpack=True, usecols=(2,4))
 Table.close()
 
@@ -69,8 +69,6 @@ G2007_CO = G2007_CO*1e9
 # Krips+2008
 Krips_LFIR = np.array((10.8136,9.49601,9.14275,9.22923,9.58508,9.45516,10.6883,10.1939,11.9754))
 Krips_LHCN = np.array((8.15425,6.95629,6.442,6.51264,7.21742,6.79601,7.38231,6.845,9.05306))
-
-#### Grácia-Carpio 2008 ??
 
 
 #### Garcia-Burillo+2012
@@ -185,17 +183,16 @@ UL(156e12/15.4, 11.4e10/15.4, color = rybak_color, label = 'Rybak 2026', size=35
 beth_color = '#EE6100FF'
 beth_size = 15
 r21 = 0.7
-plt.errorbar(1.87e13, 5.90e10/(r21*5.5), yerr=6.75e9/(r21*5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0314-44
-plt.errorbar(4.68e12, 5.09e10/(r21*21), yerr=7.71e9/(r21*21), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT2134-50
-plt.errorbar(9.94e12, 5.58e10/(r21*10.04), yerr=8.58e9/(r21*10.04), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0532-50
-plt.errorbar(1.4e13, 6.42e10/(r21*5.5), yerr=1.19e10/(r21*5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0625-58
-plt.errorbar(4.62e13, 7.85e10/(r21*5.5), yerr=7.26e9/(r21 *5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0402-45
-plt.errorbar(4.09e12, 2.94e10/(r21*20.1), yerr=6.19e9/(r21*20.1), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0538-50
-plt.errorbar(1.58e13, 3.04e10/(r21*5.5), yerr=1.14e10/(r21*5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT2101-60
-plt.errorbar(2.34e13, 2.09e10/(r21*5.5), yerr=0/(r21*5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0625-55
-plt.errorbar(2.22e13, 1.04e10/(r21*5.5), yerr=0/(r21*5.5), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT2332-53
-plt.errorbar(1.87e13, 1.35e10/(r21*5.49), yerr=6.58e9/(r21*5.49), color = beth_color, label = 'Westoby 2026', zorder=5, markersize=beth_size, fmt='.') # SPT0027-50 
-
+plt.errorbar(2.15e13, 4.38e10/(0.7*5.49), yerr=1.10e10/(0.7*5.49), color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0027-50
+plt.errorbar(2.15e13, 6.24e10/(0.7*5.5), yerr=8.44e9/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0314-44
+plt.errorbar(5.13e13, 7.70e10/(0.7*5.5), yerr=7.27e9/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0402-45
+plt.errorbar(1.14e13, 7.72e10/(0.7*10.04), yerr=1.07e10/(0.7*10.04),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0532-50
+plt.errorbar(4.70e12, 3.09e10/(0.7*20.1), yerr=4.64e9/(0.7*20.1),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0538-50
+plt.errorbar(1.61e13, 6.42e10/(0.7*5.5), yerr=1.19e10/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0625-58
+plt.errorbar(2.68e13, 2.09e10/(0.7*5.5), yerr=8.37e9/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT0625-55
+plt.errorbar(1.81e13, 3.23e10/(0.7*5.5), yerr=7.61e9/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT2101-60
+plt.errorbar(5.37e12, 5.55e10/(0.7*21), yerr=9.25e9/(0.7*21),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT2134-50
+plt.errorbar(2.55e13, 2.39e10/(0.7*5.5), yerr=5.97e9/(0.7*5.5),color=beth_color, label='Westoby 2026', zorder=5,markersize=beth_size, fmt='.') # SPT2332-53
 
 # MPF 2026
 my_color = "#9151B8"
@@ -215,8 +212,6 @@ UL(7.4e13/32.5, 4.4e10/32.8, color = my_color, edgecolor=my_color, label = 'This
 plt.errorbar(10.06e13/11.7, 5.3e10/11.7, yerr=3.3e10/11.7,  color = my_color, mec=my_edge_color, label = 'This work', zorder=10, markersize=my_size, fmt='.') # Nav1.56
 UL(4.11e13/6.1, 4.38e10/6.1, color = my_color, edgecolor=my_color, label = 'This work', size=50, zorder=10) # J213+0109
 plt.errorbar(9.23e13/7.0, 3.8e10/7.0, yerr=1.0e10/7.0, color = my_color, mec=my_edge_color, label = 'This work', zorder=10, markersize=my_size, fmt='.') # J0116
-
-# Wrong
 plt.errorbar(39e13/11, 4.2e10/11, yerr=2.2e10/11, color = my_color, mec=my_edge_color, label = 'This work', zorder=10, markersize=my_size, fmt='.') # Eyebrow
 
 
@@ -295,16 +290,16 @@ x_values = [
     36e12/5.3,
     156e12/15.4,
 
-    # 1.87e13,
-    # 4.68e12,
-    # 9.94e12,
-    # 1.4e13,
-    # 4.62e13,
-    # 4.09e12,
-    # 1.58e13,
-    # 2.34e13,
-    # 2.22e13,
-    # 1.87e13,
+    2.15e13,
+    2.15e13,
+    5.13e13,
+    1.14e13,
+    4.70e12,
+    1.61e13,
+    2.68e13,
+    1.81e13,
+    5.37e12,
+    2.55e13,
 
     #10**(13.73),
     #2.2e14,
@@ -335,16 +330,16 @@ y_values = [
     5.1e10/5.3,
     11.4e10/15.4,
 
-    # 5.90e10/(0.7*5.5),
-    # 5.09e10/(0.7*21),
-    # 5.58e10/(0.7*10.04),
-    # 6.42e10/(0.7*5.5),
-    # 7.85e10/(0.7*5.5),
-    # 2.94e10/(0.7*20.1),
-    # 3.04e10/(0.7*5.5),
-    # 2.09e10/(0.7*5.5),
-    # 1.04e10/(0.7*5.5),
-    # 1.35e10/(0.7*5.49),
+    4.38e10/(0.7*5.49),
+    6.24e10/(0.7*5.5),
+    7.70e10/(0.7*5.5),
+    7.72e10/(0.7*10.04),
+    3.09e10/(0.7*20.1),
+    6.42e10/(0.7*5.5),
+    2.09e10/(0.7*5.5),
+    3.23e10/(0.7*5.5),
+    5.55e10/(0.7*21),
+    2.39e10/(0.7*5.5),
 
     #5.5e10,
     11.7e10/8.3,
@@ -375,16 +370,16 @@ y_errs = [
     0,
     0,
 
-    # 6.75e9/(r21*5.5),
-    # 7.71e9/(r21*21),
-    # 8.58e9/(r21*10.04),
-    # 1.19e10/(r21*5.5),
-    # 7.26e9/(r21*5.5),
-    # 6.19e9/(r21*20.1),
-    # 1.14e10/(r21*5.5),
-    # 1,
-    # 1,
-    # 6.58e9/(r21*5.49),
+    1.1e10/(0.7*5.49),
+    8.44e9/(0.7*5.5),
+    7.27e9/(0.7*5.5),
+    1.07e10/(0.7*10.04),
+    4.64e9/(0.7*20.1),
+    1.19e10/(0.7*5.5),
+    8.37e9/(0.7*5.5),
+    7.61e9/(0.7*5.5),
+    9.25e9/(0.7*21),
+    5.97e9/(0.7*5.5),
 
     #0,
     3.2e10/8.3,
@@ -417,16 +412,16 @@ detections = [
     0,
     0,
 
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
-    # 1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
 
     #0,
     1,
@@ -585,7 +580,7 @@ print(f"BIC = {bic_jd:.2f}")
 
 
 ############################################################
-# # FIT LINEAR RELATION 
+# FIT LINEAR RELATION 
 from scipy.optimize import curve_fit
 
 
@@ -601,7 +596,8 @@ popt, pcov = curve_fit(
     constant_model,
     log_xvalues,
     log_yvalues,
-    sigma=log_y_errs
+    sigma=log_y_errs,
+    absolute_sigma=True
 )
 
 intercept_fixed = popt[0]
@@ -676,7 +672,8 @@ popt, pcov = curve_fit(
     linear_model,
     log_xvalues,
     log_yvalues,
-    sigma=log_y_errs
+    sigma=log_y_errs,
+    absolute_sigma=True
 )
 
 slope = popt[0]
@@ -815,8 +812,6 @@ plt.fill_between(
     color=new_trend_color,
     edgecolor='none'
 )
-
-
 
 
 # Predicted log(HCN)

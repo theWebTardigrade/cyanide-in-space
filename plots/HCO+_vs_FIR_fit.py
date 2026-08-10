@@ -1,26 +1,9 @@
 # Libraries
 import numpy as np
-import math
-import matplotlib as ml
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib import ticker
-from matplotlib.ticker import MaxNLocator, MultipleLocator, AutoMinorLocator
-from matplotlib import rc
-from matplotlib.ticker import FormatStrFormatter
-import csv
-
-from scipy.stats import linregress
-import pandas as pd
-from scipy.stats import spearmanr
-from scipy.stats import ks_2samp
-
 import linmix
-from scipy.optimize import curve_fit
-
 from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
-from matplotlib.legend_handler import HandlerTuple
+
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["mathtext.fontset"] = "stix"
