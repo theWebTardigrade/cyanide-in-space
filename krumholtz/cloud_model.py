@@ -226,7 +226,7 @@ def solve_escape_probabilities(level_calc, T, mach, X_abund, tau_ref, n_ref,
         if delta < tol:
             break
 
-    return beta, R
+    return beta
 
 
 # ---------------------------------------------------------------------------

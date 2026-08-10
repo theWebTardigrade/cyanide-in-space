@@ -44,7 +44,7 @@ def make_figure1(mols, case="intermediate", n_means=(1e2, 1e3, 1e4), outfile="fi
         line_colors = ['#4285f4', '#FFAD0AFF','#9900ff']
 
         for n_mean, col in zip(n_means, line_colors):
-            beta, R = solve_escape_probabilities(level_calc, n_ref=n_mean,
+            beta = solve_escape_probabilities(level_calc, n_ref=n_mean,
                                                    coll_partner_idx=part, **kwargs)
             res = luminosity_per_volume(level_calc, beta, n_mean=n_mean,
                                          coll_partner_idx=part, lnx_grid=lnx_grid,
