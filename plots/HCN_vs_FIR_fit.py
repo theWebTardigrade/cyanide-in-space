@@ -231,6 +231,9 @@ plt.fill_between(
     edgecolor='none'
 )
 
+# Krumholz
+model_data = np.load("/home/polaris/cyanide_in_space/scripts/prussic-main/prussic_iii/FIR_Lprime_modeldata.npz")
+plt.plot(model_data["HCN_normal_LFIR"],model_data["HCN_normal_Lprime"], color='black', lw=2, linestyle = '-', zorder=100, label = 'Krumholz+2007')
 
 
 
