@@ -1,28 +1,6 @@
-"""
-generate_figures.py
---------------------
-Reproduces (using your real LAMDA data files, loaded through
-load_moldata.LevelCalculator) the two purely-theoretical figures of
-Krumholz & Thompson (2007):
-
-  Figure 1: fractional contribution to line luminosity and to mass,
-            d L/d ln n / L  and  d M/d ln n / M,  vs. density n, for
-            CO(1-0), HCO+(1-0), HCN(1-0), for three mean cloud densities.
-
-  Figure 2: the ratio of star formation rate to line luminosity, SFR/L,
-            as a function of mean density n, for the three lines (top-left
-            panel), and for each line under the three galaxy models of
-            Table 1 (remaining three panels).
-
-Figures 3 & 4 of the paper additionally require external observational
-compilations (Gao & Solomon 2004; Gao et al. 2007; etc.) that were not
-supplied with this task, so they are not reproduced here.
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
-
 
 
 LINE_FREQUENCIES = {
@@ -113,14 +91,7 @@ def make_figure2(mols, outfile="figure2.png"):
 
     n_grid = np.geomspace(10, 1e7, 20)
 
-    # Conversion between SFR/L' and L_FIR/L'
-    MSUN = 1.98847e33   # g
-    YR = 3.15576e7      # s
     LSUN = 3.828e33
-
-    c_light = 2.99e10      # cm/s
-    k_B = 1.38e-16        # erg/K
-
     PC_CM = 3.0856776e18  # cm
 
 
