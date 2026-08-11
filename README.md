@@ -1,7 +1,8 @@
 # Cyanide in Space
 
 ## data
-includes the data files
+files with observational data
+single file with krumholz model data
 
 ## krumholz
 krumholz model obtained through a mix of claude and ISM course code homework
